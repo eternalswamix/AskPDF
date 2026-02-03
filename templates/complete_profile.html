@@ -1,0 +1,58 @@
+{% extends "base_dark.html" %}
+{% block title %}Complete Profile • PDF.AI{% endblock %}
+
+{% block content %}
+<section class="max-w-md mx-auto reveal">
+  <div class="glass-card neon-border rounded-2xl p-8 hover-glow">
+    <h1 class="text-3xl font-black text-gradient">Complete your profile</h1>
+    <p class="text-slate-400 mt-2">
+      We need a few details to finish your account setup.
+    </p>
+
+    {% if error %}
+      <div class="mt-5 bg-red-500/10 border border-red-500/30 text-red-300 text-sm rounded-xl p-3">
+        ❌ {{ error }}
+      </div>
+    {% endif %}
+
+    <form method="POST" class="mt-6 space-y-4">
+
+      <!-- ✅ Username -->
+      <div>
+        <label class="text-sm text-slate-300">Username</label>
+        <input name="username" type="text" required placeholder="unique username"
+          class="mt-1 w-full rounded-xl bg-black/20 border border-white/10 text-white placeholder:text-slate-500 focus:border-primary focus:ring-primary" />
+        <p class="text-xs text-slate-500 mt-1">Must be unique. No spaces.</p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label class="text-sm text-slate-300">First name</label>
+          <input name="first_name" type="text" required
+            class="mt-1 w-full rounded-xl bg-black/20 border border-white/10 text-white placeholder:text-slate-500 focus:border-primary focus:ring-primary"
+            placeholder="Enter your first name">
+        </div>
+
+        <div>
+          <label class="text-sm text-slate-300">Last name</label>
+          <input name="last_name" type="text" required
+            class="mt-1 w-full rounded-xl bg-black/20 border border-white/10 text-white placeholder:text-slate-500 focus:border-primary focus:ring-primary"
+            placeholder="Enter your last name">
+        </div>
+      </div>
+
+      <div>
+        <label class="text-sm text-slate-300">Phone no</label>
+        <input name="phone_no" type="text" required
+          class="mt-1 w-full rounded-xl bg-black/20 border border-white/10 text-white placeholder:text-slate-500 focus:border-primary focus:ring-primary"
+          placeholder="+91 9XXXXXXXXX">
+      </div>
+
+      <button type="submit"
+        class="w-full hover-glow bg-primary text-white py-3 rounded-xl font-bold shadow-lg shadow-primary/20">
+        Save & Continue
+      </button>
+    </form>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>{% block title %}PDF Chat Assistant{% endblock %}</title>
+
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#135bec",
+          },
+          fontFamily: {
+            "display": ["Inter"]
+          }
+        },
+      },
+    }
+  </script>
+
+  <style>
+    html { scroll-behavior: smooth; }
+
+    .bg-mesh {
+      background-color: #0a0a0c;
+      background-image:
+        radial-gradient(at 0% 0%, rgba(19, 91, 236, 0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(168, 85, 247, 0.1) 0px, transparent 50%);
+    }
+
+    .glass-card {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .neon-border {
+      border: 1px solid rgba(19, 91, 236, 0.3);
+      box-shadow: 0 0 15px rgba(19, 91, 236, 0.1);
+    }
+    .text-gradient {
+      background: linear-gradient(90deg, #22d3ee 0%, #a855f7 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hover-glow {
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    }
+    .hover-glow:hover {
+      transform: translateY(-2px);
+      border-color: rgba(19, 91, 236, 0.55);
+      box-shadow: 0 0 22px rgba(19, 91, 236, 0.18);
+    }
+
+    .nav-glow {
+      height: 2px;
+      width: 100%;
+      background: linear-gradient(90deg, transparent, rgba(19,91,236,0.85), rgba(168,85,247,0.65), transparent);
+      background-size: 200% 100%;
+      animation: glowMove 4s linear infinite;
+      opacity: 0.65;
+    }
+    @keyframes glowMove {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 200% 50%; }
+    }
+
+    .fade-in { opacity: 1; transform: translateY(0); pointer-events: auto; }
+    .fade-out { opacity: 0; transform: translateY(10px); pointer-events: none; }
+
+    .page-enter {
+      opacity: 0;
+      transform: translateY(10px);
+      animation: pageFade 0.55s ease forwards;
+    }
+    @keyframes pageFade {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(14px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .reveal.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      border: 2px solid rgba(255,255,255,0.35);
+      border-top-color: white;
+      animation: spin 0.7s linear infinite;
+      display: inline-block;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+
+<body class="bg-mesh min-h-screen font-display text-slate-100 selection:bg-primary/30">
+
+<header class="fixed top-0 w-full z-50 glass-card border-x-0 border-t-0">
+  <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+
+    <a href="{{ url_for('main.index') }}" class="flex items-center gap-3">
+      <div class="bg-primary p-1.5 rounded-lg flex items-center justify-center shadow-lg shadow-primary/20">
+        <span class="material-symbols-outlined text-white text-xl">description</span>
+      </div>
+      <h2 class="text-xl font-bold tracking-tight">PDF.AI</h2>
+    </a>
+
+    <nav class="hidden md:flex items-center gap-8">
+      <a class="text-sm font-medium hover:text-primary transition-colors" href="{{ url_for('main.index') }}#features">Features</a>
+      <a class="text-sm font-medium hover:text-primary transition-colors" href="{{ url_for('main.index') }}#security">Security</a>
+      <a class="text-sm font-medium hover:text-primary transition-colors" href="{{ url_for('main.index') }}#how">How it works</a>
+      <a class="text-sm font-medium hover:text-primary transition-colors" href="{{ url_for('main.index') }}#cta">Get Started</a>
+    </nav>
+
+    <div class="flex items-center gap-3">
+      {% if user %}
+
+        <span class="hidden sm:inline text-xs text-slate-400">
+        @{{ user.get("username") if user and user.get("username") else user.get("email") }}
+        </span>
+
+        <a href="{{ url_for('auth.profile') }}"
+           class="px-4 py-2 text-sm font-semibold hover:text-primary transition-colors">
+          Profile
+        </a>
+
+        <a href="{{ url_for('main.logout') }}"
+           class="px-4 py-2 text-sm font-semibold text-red-400 hover:text-red-300 transition-colors">
+          Logout
+        </a>
+
+        <a href="{{ url_for('pdf.upload_pdf') }}"
+           class="bg-primary hover:bg-primary/90 text-white px-5 py-2 rounded-lg text-sm font-bold shadow-lg shadow-primary/20 transition-all hover-glow">
+          Upload PDF
+        </a>
+
+      {% else %}
+
+        <a href="{{ url_for('auth.login') }}"
+           class="px-4 py-2 text-sm font-semibold hover:text-primary transition-colors">
+          Login
+        </a>
+
+        <a href="{{ url_for('auth.register') }}"
+           class="bg-primary hover:bg-primary/90 text-white px-5 py-2 rounded-lg text-sm font-bold shadow-lg shadow-primary/20 transition-all hover-glow">
+          Get Started
+        </a>
+
+      {% endif %}
+    </div>
+
+  </div>
+
+  <div class="nav-glow"></div>
+</header>
+
+<main class="pt-24 px-6 pb-16 page-enter">
+  <div class="max-w-6xl mx-auto">
+    {% block content %}{% endblock %}
+  </div>
+</main>
+
+<button id="backToTop"
+  class="fixed bottom-6 right-6 fade-out transition-all duration-300
+         glass-card neon-border hover-glow rounded-full p-3 shadow-lg hover:bg-white/10">
+  <span class="material-symbols-outlined text-primary">keyboard_arrow_up</span>
+</button>
+
+<script>
+  const backToTopBtn = document.getElementById("backToTop");
+  window.addEventListener("scroll", () => {
+    if (window.scrollY > 450) {
+      backToTopBtn.classList.remove("fade-out");
+      backToTopBtn.classList.add("fade-in");
+    } else {
+      backToTopBtn.classList.remove("fade-in");
+      backToTopBtn.classList.add("fade-out");
+    }
+  });
+  backToTopBtn.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+  const revealEls = document.querySelectorAll(".reveal");
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) entry.target.classList.add("show");
+    });
+  }, { threshold: 0.12 });
+
+  revealEls.forEach(el => io.observe(el));
+</script>
+
+{% if request.endpoint == "main.index" or not user %}
+  <footer class="px-6 py-12 border-t border-white/5 bg-black/40">
+    <div class="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-10">
+
+      <div class="col-span-2">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="bg-primary p-1.5 rounded-lg shadow-lg shadow-primary/20">
+            <span class="material-symbols-outlined text-white text-xl">description</span>
+          </div>
+          <h2 class="text-xl font-bold tracking-tight">PDF.AI</h2>
+        </div>
+        <p class="text-slate-500 max-w-xs mb-6">
+          Built for the future of document interaction. Upload PDFs and chat with AI instantly.
+        </p>
+      </div>
+
+      <div>
+        <h4 class="font-bold mb-6">Product</h4>
+        <ul class="space-y-4 text-slate-500 text-sm">
+          <li><a class="hover:text-white transition-colors" href="{{ url_for('main.index') }}#features">Features</a></li>
+          <li><a class="hover:text-white transition-colors" href="{{ url_for('main.index') }}#how">How it works</a></li>
+          <li><a class="hover:text-white transition-colors" href="{{ url_for('main.index') }}#security">Security</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="font-bold mb-6">Account</h4>
+        <ul class="space-y-4 text-slate-500 text-sm">
+          {% if user %}
+            <li><a class="hover:text-white transition-colors" href="{{ url_for('pdf.upload_pdf') }}">Upload PDF</a></li>
+            <li><a class="hover:text-white transition-colors" href="{{ url_for('auth.profile') }}">Profile</a></li>
+            <li><a class="hover:text-white transition-colors" href="{{ url_for('main.logout') }}">Logout</a></li>
+          {% else %}
+            <li><a class="hover:text-white transition-colors" href="{{ url_for('auth.login') }}">Login</a></li>
+            <li><a class="hover:text-white transition-colors" href="{{ url_for('auth.register') }}">Register</a></li>
+          {% endif %}
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="font-bold mb-6">Legal</h4>
+        <ul class="space-y-4 text-slate-500 text-sm">
+          <li><a class="hover:text-white transition-colors" href="#">Privacy Policy</a></li>
+          <li><a class="hover:text-white transition-colors" href="#">Terms of Service</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto mt-14 pt-6 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-slate-600 text-xs">
+      <p>© 2026 PDF.AI. All rights reserved.</p>
+
+      <span class="flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-green-500"></span>
+        All systems operational
+      </span>
+    </div>
+  </footer>
+{% endif %}
+
+</body>
+</html>

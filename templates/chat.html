@@ -1,0 +1,169 @@
+{% extends "base_dark.html" %}
+{% block title %}Chat • PDF.AI{% endblock %}
+
+{% block content %}
+
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 reveal">
+
+  <!-- Sidebar -->
+  <aside class="lg:col-span-4 xl:col-span-3 glass-card neon-border rounded-2xl overflow-hidden">
+    <div class="p-4 border-b border-white/10 flex items-center justify-between">
+      <div>
+        <p class="text-sm text-slate-400">Your PDFs</p>
+        <h3 class="text-lg font-bold">History</h3>
+      </div>
+
+      <a href="{{ url_for('pdf.upload_pdf') }}"
+         class="hover-glow bg-primary text-white px-3 py-2 rounded-xl text-sm font-bold shadow-lg shadow-primary/20">
+        + Upload
+      </a>
+    </div>
+
+    <div class="p-4 border-b border-white/10">
+      <input id="pdfSearch"
+        placeholder="Search PDFs..."
+        class="w-full rounded-xl bg-black/20 border border-white/10 text-white placeholder:text-slate-500 focus:border-primary focus:ring-primary"
+      />
+    </div>
+
+    <div id="pdfList" class="max-h-[520px] overflow-y-auto p-3 space-y-2">
+      {% if pdfs|length == 0 %}
+        <div class="text-center text-slate-400 py-10">
+          <p class="font-semibold">No PDFs uploaded</p>
+          <p class="text-sm text-slate-500 mt-1">Upload your first PDF to start chatting.</p>
+        </div>
+      {% endif %}
+
+      {% for pdf in pdfs %}
+        <a href="{{ url_for('chat.chat', pdf_id=pdf.id) }}"
+           class="block p-3 rounded-xl transition hover:bg-white/5 border border-white/10
+                  {% if pdf.id == pdf_id %} bg-white/5 border-primary/40 {% endif %}">
+          <div class="flex items-start gap-3">
+            <span class="material-symbols-outlined text-primary">picture_as_pdf</span>
+            <div class="min-w-0">
+              <p class="text-sm font-semibold truncate pdf-name">
+                {{ pdf.original_filename if pdf.original_filename else pdf.filename }}
+              </p>
+              <p class="text-xs text-slate-500 truncate">Click to open chat</p>
+            </div>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  </aside>
+
+  <!-- Chat Area -->
+  <section class="lg:col-span-8 xl:col-span-9">
+    <div class="flex items-start justify-between gap-4 mb-4">
+      <div>
+        <h1 class="text-3xl font-black text-gradient">PDF AI Chat</h1>
+        <p class="text-slate-400 mt-1">
+          Ask questions strictly based on your PDF. Outside answers will be rejected.
+        </p>
+      </div>
+    </div>
+
+    <div class="glass-card neon-border rounded-2xl overflow-hidden">
+      <div id="chatBox" class="h-[520px] overflow-y-auto p-5 space-y-4">
+
+        {% if messages|length == 0 %}
+          <div class="text-center text-slate-400 mt-28">
+            <p class="text-lg font-bold">Ask your first question 👇</p>
+            <p class="text-sm mt-1 text-slate-500">Try: <span class="text-slate-200 font-semibold">summary</span></p>
+          </div>
+        {% endif %}
+
+        {% for msg in messages %}
+          <div class="flex justify-end">
+            <div class="max-w-[80%] bg-primary/90 text-white rounded-2xl px-4 py-3 shadow-lg shadow-primary/20">
+              <p class="text-xs font-extrabold uppercase tracking-wider text-white/95 mb-2 flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-white/80"></span>
+                You
+              </p>
+              <p class="text-sm leading-relaxed whitespace-pre-line">{{ msg.q }}</p>
+            </div>
+          </div>
+
+          <div class="flex justify-start">
+            <div class="max-w-[80%] bg-white/5 border border-white/10 text-slate-100 rounded-2xl px-4 py-3">
+              <p class="text-xs font-extrabold uppercase tracking-wider text-slate-100 mb-2 flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-primary"></span>
+                Assistant
+              </p>
+              <p class="text-sm leading-relaxed whitespace-pre-line text-slate-200">{{ msg.a }}</p>
+            </div>
+          </div>
+        {% endfor %}
+
+        <div id="typing" class="hidden flex justify-start">
+          <div class="max-w-[70%] bg-white/5 border border-white/10 text-slate-100 rounded-2xl px-4 py-3">
+            <p class="text-xs font-bold text-slate-300 mb-1">Assistant</p>
+            <div class="flex items-center gap-2 text-slate-400 text-sm">
+              <span class="spinner"></span>
+              AI is thinking...
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="border-t border-white/10 p-4">
+        <form id="chatForm" method="POST" class="flex gap-3">
+          <input
+            name="question"
+            id="questionInput"
+            placeholder="Ask something from your PDF..."
+            required
+            class="flex-1 rounded-xl bg-black/20 border border-white/10 text-white placeholder:text-slate-500 focus:border-primary focus:ring-primary"
+          />
+
+          <button id="sendBtn" type="submit"
+            class="hover-glow bg-primary hover:bg-primary/90 text-white font-bold px-6 rounded-xl shadow-lg shadow-primary/20 transition-all flex items-center justify-center gap-2">
+            <span id="sendText">Send</span>
+            <span id="sendSpin" class="hidden spinner"></span>
+          </button>
+        </form>
+
+        <p class="text-xs text-slate-500 mt-2">
+          Tip: type <span class="text-slate-300 font-semibold">summary</span> for quick overview.
+        </p>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+  const chatBox = document.getElementById("chatBox");
+  chatBox.scrollTop = chatBox.scrollHeight;
+
+  const chatForm = document.getElementById("chatForm");
+  const typing = document.getElementById("typing");
+  const sendBtn = document.getElementById("sendBtn");
+  const sendText = document.getElementById("sendText");
+  const sendSpin = document.getElementById("sendSpin");
+
+  chatForm.addEventListener("submit", () => {
+    typing.classList.remove("hidden");
+    sendText.textContent = "Sending";
+    sendSpin.classList.remove("hidden");
+    sendBtn.disabled = true;
+    chatBox.scrollTop = chatBox.scrollHeight;
+  });
+
+  const pdfSearch = document.getElementById("pdfSearch");
+  const pdfList = document.getElementById("pdfList");
+
+  pdfSearch.addEventListener("input", () => {
+    const value = pdfSearch.value.toLowerCase();
+    const items = pdfList.querySelectorAll("a");
+
+    items.forEach((item) => {
+      const nameEl = item.querySelector(".pdf-name");
+      const name = nameEl ? nameEl.innerText.toLowerCase() : "";
+      item.style.display = name.includes(value) ? "block" : "none";
+    });
+  });
+</script>
+
+{% endblock %}

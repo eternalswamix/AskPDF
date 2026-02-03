@@ -1,0 +1,171 @@
+{% extends "base_dark.html" %}
+{% block title %}Home • PDF.AI{% endblock %}
+
+{% block content %}
+
+<!-- HERO -->
+<section class="relative py-16 lg:py-24 overflow-hidden reveal">
+  <div class="max-w-6xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
+
+    <!-- LEFT -->
+    <div class="flex flex-col gap-8">
+
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold uppercase tracking-widest w-fit">
+        <span class="relative flex h-2 w-2">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+        </span>
+        Gemini + Vector Search + Supabase
+      </div>
+
+      <div class="space-y-4">
+        <h1 class="text-5xl lg:text-7xl font-black leading-[1.1] text-gradient">
+          Chat with your PDFs using AI
+        </h1>
+        <p class="text-lg lg:text-xl text-slate-400 max-w-xl leading-relaxed">
+          Upload any PDF, ask questions, get instant answers.  
+          Powered by Gemini + ChromaDB retrieval — accurate, fast & smart.
+        </p>
+      </div>
+
+      <div class="flex flex-col sm:flex-row gap-4">
+        <a
+          href="{% if user %}{{ url_for('pdf.upload_pdf') }}{% else %}{{ url_for('auth.login', next='/upload') }}{% endif %}"
+          class="hover-glow flex items-center justify-center gap-2 bg-primary hover:scale-[1.02] active:scale-95 text-white h-14 px-8 rounded-xl font-bold text-lg shadow-[0_0_25px_rgba(19,91,236,0.4)] transition-all"
+        >
+          <span class="material-symbols-outlined">upload_file</span>
+          Upload PDF
+        </a>
+
+        <a
+          href="#how"
+          class="hover-glow flex items-center justify-center gap-2 glass-card neon-border hover:bg-white/10 h-14 px-8 rounded-xl font-bold text-lg transition-all"
+        >
+          View Demo
+        </a>
+      </div>
+
+      <div class="flex items-center gap-4 text-sm text-slate-500">
+        <div class="flex -space-x-2">
+          <img class="w-8 h-8 rounded-full border-2 border-black/50" alt="user1"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuD8n7xeMOeYbKDhptFHSZzgUWUgyz-n-YFQSEcrUHsNYHoa4cVqmV-YuRTn01oGiYheVaPeJ1uznr_dQirgVlf_kXKzjl7Gantr0xkM3myQuMZ3BWVQfW9nT5TbxYKAAMzIcPkvFH8paZ9Vmz1XaTmpUQxsJzMSqbUVqYqxEGNnjarASSqkYWNPJ0RAwC39mM_Sj2wbt3S899cy4O2uDfv7EU3GukRupldeAOJh9jVx5QfZMu0UXm2p2okPfPJr_WeiME0HfwkFO38"/>
+          <img class="w-8 h-8 rounded-full border-2 border-black/50" alt="user2"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDVP_m0gWJ4AWb0rn4O-iUrQab7dr9Niao-YSHr7z9wvSa1MNrUbUxtRLjYksPZF9Iiuk8rx-Y1FRPX2TI_ncGYRXWRu5TpuR_2u4-8b8kEAHwpyG2vv_vZnFLDNUMBjOwuSSQ4fsa5UgkplEoh2Rjkmb4Fmc3IGYZweWDw4h8wTnSAUAKZ6znTTow0F89ujfz4Vh8V91kqw1EeFrwt3BWBXmKnWUxuxC-vKmJeyGOGbQD-2QNlyB0lIo0wSobu5fqFyXnbgiIahnY"/>
+          <img class="w-8 h-8 rounded-full border-2 border-black/50" alt="user3"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDnNUXKUsLzbjp7oIrH2dSKIAJyAOkgkTqqkqlIiM6WffCBrniavcW1RqQ430wJ4OYR-1mh2HNxuAX36GexINkn3El5f8eXxPs14Xaagme1zQkz26MAcyDZtaDmaIlfTTcptNionXkWTbAX2iefZfx5L9nODBWe-pl90xYhV5fClreKFfnSKQZE_8bIgyZEzmzOnyKmI0otAOF7nxZLbXrpfzvQONPKx21hkZuJvNtQ2F7nU4F9JCuW4FsUAYWh8MrXlK7LIU5A81U"/>
+        </div>
+        <p>Trusted by students and researchers</p>
+      </div>
+
+    </div>
+
+    <!-- RIGHT VISUAL -->
+    <div class="relative flex justify-center items-center h-[500px] reveal">
+      <div class="absolute inset-0 bg-primary/20 blur-[120px] rounded-full scale-75"></div>
+
+      <div class="glass-card neon-border hover-glow w-72 h-96 rounded-2xl relative flex flex-col items-center justify-center shadow-2xl overflow-hidden border-white/20">
+        <div class="absolute top-1/3 left-0 w-full h-1 bg-primary shadow-[0_0_15px_#135bec] z-20"></div>
+        <div class="absolute top-1/3 left-0 w-full h-24 bg-gradient-to-b from-primary/20 to-transparent z-10"></div>
+
+        <span class="material-symbols-outlined text-[120px] text-primary opacity-80">picture_as_pdf</span>
+
+        <div class="mt-8 space-y-2 w-full px-8">
+          <div class="h-2 w-full bg-white/10 rounded"></div>
+          <div class="h-2 w-3/4 bg-white/10 rounded"></div>
+          <div class="h-2 w-1/2 bg-white/10 rounded"></div>
+        </div>
+      </div>
+
+      <div class="absolute top-10 right-10 glass-card neon-border p-4 rounded-xl flex items-center gap-3 animate-bounce">
+        <span class="material-symbols-outlined text-green-400">check_circle</span>
+        <span class="text-sm font-medium">Ready to Chat</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- FEATURES -->
+<section id="features" class="py-16 reveal">
+  <div class="text-center space-y-4 mb-16">
+    <h2 class="text-3xl lg:text-5xl font-bold tracking-tight">Smart PDF Intelligence</h2>
+    <p class="text-slate-400 text-lg max-w-2xl mx-auto">
+      We use semantic embeddings + vector search so results stay accurate and context-based.
+    </p>
+  </div>
+
+  {% set features = [
+    ("summarize","Instant Summaries","Summarize long PDFs instantly into clean readable output."),
+    ("manage_search","Vector Search","Find exact answers using semantic similarity search."),
+    ("format_quote","PDF-only Answers","If the answer is not in PDF, assistant rejects it clearly."),
+    ("security","Secure & Private","Auth + profile stored securely in Supabase.")
+  ] %}
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    {% for icon, title, desc in features %}
+      <div class="glass-card neon-border hover-glow p-8 rounded-2xl">
+        <div class="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center text-primary mb-6">
+          <span class="material-symbols-outlined">{{ icon }}</span>
+        </div>
+        <h3 class="text-xl font-bold mb-3">{{ title }}</h3>
+        <p class="text-slate-400 leading-relaxed">{{ desc }}</p>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+
+
+<!-- HOW IT WORKS -->
+<section id="how" class="py-20 reveal">
+  <div class="glass-card neon-border hover-glow rounded-[2rem] p-10 lg:p-14">
+    <h2 class="text-3xl lg:text-4xl font-black mb-6">How it works</h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-slate-300">
+      <div class="glass-card hover-glow rounded-2xl p-6">
+        <p class="text-primary font-bold text-sm">STEP 1</p>
+        <h3 class="text-xl font-bold mt-2">Upload PDF</h3>
+        <p class="text-slate-400 mt-2">Upload your file and we extract + chunk content automatically.</p>
+      </div>
+      <div class="glass-card hover-glow rounded-2xl p-6">
+        <p class="text-primary font-bold text-sm">STEP 2</p>
+        <h3 class="text-xl font-bold mt-2">Index & Search</h3>
+        <p class="text-slate-400 mt-2">ChromaDB stores semantic embeddings for fast retrieval.</p>
+      </div>
+      <div class="glass-card hover-glow rounded-2xl p-6">
+        <p class="text-primary font-bold text-sm">STEP 3</p>
+        <h3 class="text-xl font-bold mt-2">Ask Questions</h3>
+        <p class="text-slate-400 mt-2">Gemini answers strictly from PDF context (not outside).</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta" class="py-20 reveal">
+  <div class="glass-card neon-border hover-glow rounded-[2rem] p-12 lg:p-20 text-center relative overflow-hidden">
+    <div class="absolute -top-24 -left-24 w-64 h-64 bg-primary/20 blur-[100px] rounded-full"></div>
+    <div class="absolute -bottom-24 -right-24 w-64 h-64 bg-purple-500/10 blur-[100px] rounded-full"></div>
+
+    <div class="relative z-10 space-y-8">
+      <h2 class="text-4xl lg:text-6xl font-black">Ready to unlock your PDFs?</h2>
+      <p class="text-xl text-slate-400 max-w-2xl mx-auto">
+        Upload your first document and get instant AI answers.
+      </p>
+
+      <div class="flex flex-col sm:flex-row justify-center gap-4">
+        <a
+          href="{% if user %}{{ url_for('pdf.upload_pdf') }}{% else %}{{ url_for('auth.register') }}{% endif %}"
+          class="hover-glow bg-primary text-white h-16 px-10 rounded-xl font-bold text-xl shadow-2xl transition-all inline-flex items-center justify-center"
+        >
+          Get Started for Free
+        </a>
+      </div>
+
+      <p class="text-sm text-slate-500">No credit card required • Free tier available</p>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
