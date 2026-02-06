@@ -131,8 +131,45 @@
       </form>
 
       <div class="mt-8 text-center">
-        <p class="text-[10px] text-dark-600 font-bold uppercase tracking-[0.2em] opacity-50">End of identity module</p>
+        <p class="text-[10px] text-dark-600 font-bold uppercase tracking-[0.2em] opacity-50">Identity Module</p>
       </div>
+    </div>
+
+    <!-- API KEY CARD -->
+    <div class="bg-dark-800 rounded-2xl shadow-soft border border-dark-700 p-8 reveal delay-300">
+      <div class="flex items-center gap-4 mb-8">
+        <div class="w-12 h-12 rounded-xl bg-purple-900/20 flex items-center justify-center text-purple-400 shadow-lg">
+          <span class="material-symbols-outlined text-2xl">key</span>
+        </div>
+        <div>
+          <h2 class="text-lg font-bold text-gray-100">API Configuration</h2>
+          <p class="text-xs font-bold text-gray-500 uppercase tracking-widest">Connect your AI models</p>
+        </div>
+      </div>
+
+      <form method="POST" action="{{ url_for('auth.update_api_key') }}" class="space-y-6">
+        <div>
+          <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 px-1">Gemini API
+            Key</label>
+          <div class="relative group">
+            <span
+              class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-purple-400 transition-colors">vpn_key</span>
+            <input name="gemini_api_key" type="password"
+              value="{{ user_db.gemini_api_key if user_db.gemini_api_key else '' }}"
+              class="w-full pl-11 pr-4 py-3 rounded-xl bg-dark-900 border border-dark-700 text-gray-200 placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 transition-all font-medium font-mono"
+              placeholder="AIzaSy..." />
+          </div>
+          <p class="text-[10px] text-gray-500 mt-2 px-1 font-bold italic tracking-wider uppercase">
+            Provided key overrides system default. Stored securely.
+          </p>
+        </div>
+
+        <button type="submit"
+          class="w-full bg-dark-900 hover:bg-black text-white font-bold py-4 rounded-xl border border-dark-700 hover:border-gray-600 transition-all active:scale-95 flex items-center justify-center gap-2">
+          Update API Key
+          <span class="material-symbols-outlined text-sm">save</span>
+        </button>
+      </form>
     </div>
 
   </div>

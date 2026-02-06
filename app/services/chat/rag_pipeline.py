@@ -1,6 +1,6 @@
 from app.services.chat.gemini_client import generate_text
 
-def generate_answer(question: str, context: str):
+def generate_answer(question: str, context: str, api_key=None):
     prompt = f"""
 You are a helpful PDF assistant.
 Answer ONLY using the provided PDF context.
@@ -19,4 +19,4 @@ User Question:
 
 Answer:
 """
-    return generate_text(prompt).strip()
+    return generate_text(prompt, api_key=api_key).strip()

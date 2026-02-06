@@ -326,7 +326,7 @@ def profile():
 
     # ✅ Fetch current user data
     res = supabase.table("users") \
-        .select("username, first_name, last_name, phone_no, email") \
+        .select("username, first_name, last_name, phone_no, email, gemini_api_key") \
         .eq("id", user_id) \
         .single() \
         .execute()
@@ -363,3 +363,25 @@ def profile():
         return render_template("profile.html", user=session.get("user"), user_db=user_db, success="✅ Username updated successfully.")
 
     return render_template("profile.html", user=session.get("user"), user_db=user_db)
+
+
+@auth_bp.route("/profile/api-key", methods=["POST"])
+@login_required
+def update_api_key():
+    user_id = session["user"]["id"]
+    gemini_api_key = request.form.get("gemini_api_key", "").strip()
+
+    try:
+        # ✅ Update or clear key
+        update_data = {"gemini_api_key": gemini_api_key if gemini_api_key else None}
+        
+        supabase.table("users").update(update_data).eq("id", user_id).execute()
+        
+        # ✅ Update session if we store it there (we check DB each time for security usually, but consistent session is good)
+        # For now, we rely on DB fetch in consumers, so no session update needed for key.
+        
+        return redirect(url_for("auth.profile", success="✅ API Key updated successfully."))
+        
+    except Exception as e:
+        logger.error(f"Failed to update API Key: {e}", exc_info=True)
+        return redirect(url_for("auth.profile", error=f"Failed to update key: {str(e)}"))

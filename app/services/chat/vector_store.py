@@ -4,7 +4,7 @@ from app.services.chat.gemini_client import get_embedding
 BATCH_SIZE = 60  # ✅ safe batch insert size
 
 
-def add_to_vector_db(pdf_id: str, user_id: str, chunks: list[str]):
+def add_to_vector_db(pdf_id: str, user_id: str, chunks: list[str], api_key=None):
     """
     Save chunks + embeddings into Supabase table: pdf_chunks
     Uses batch inserts to avoid payload size limits.
@@ -14,7 +14,7 @@ def add_to_vector_db(pdf_id: str, user_id: str, chunks: list[str]):
 
     rows = []
     for chunk in chunks:
-        emb = get_embedding(chunk)
+        emb = get_embedding(chunk, api_key=api_key)
 
         rows.append({
             "pdf_id": pdf_id,
@@ -33,12 +33,12 @@ def add_to_vector_db(pdf_id: str, user_id: str, chunks: list[str]):
         supabase.table("pdf_chunks").insert(rows).execute()
 
 
-def search_in_vector_db(pdf_id: str, query: str, top_k: int = 6):
+def search_in_vector_db(pdf_id: str, query: str, top_k: int = 6, api_key=None):
     """
     Search using Supabase RPC function: match_pdf_chunks
     Returns: [{text, similarity}]
     """
-    query_emb = get_embedding(query)
+    query_emb = get_embedding(query, api_key=api_key)
 
     res = supabase.rpc("match_pdf_chunks", {
         "query_embedding": query_emb,

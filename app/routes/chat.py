@@ -52,9 +52,13 @@ def chat(pdf_id):
         q_lower = question.lower()
 
         try:
+            # ✅ Fetch User's API Key
+            user_data = supabase.table("users").select("gemini_api_key").eq("id", user_id).single().execute()
+            user_api_key = user_data.data.get("gemini_api_key") if user_data.data else None
+
             # ✅ Summary
             if "summary" in q_lower or "summarize" in q_lower:
-                context_results = search_in_vector_db(pdf_id, "overall document summary", top_k=10)
+                context_results = search_in_vector_db(pdf_id, "overall document summary", top_k=10, api_key=user_api_key)
 
                 if not context_results:
                     answer = "❌ Summary generate nahi ho paya, because PDF indexing incomplete hai. Please re-upload PDF."
@@ -66,11 +70,11 @@ def chat(pdf_id):
                     else:
                         summary_prompt = "Give a clean structured summary of this PDF in bullet points."
 
-                    answer = generate_answer(summary_prompt, context)
+                    answer = generate_answer(summary_prompt, context, api_key=user_api_key)
 
             else:
                 # ✅ Normal question
-                results = search_in_vector_db(pdf_id, question, top_k=8)
+                results = search_in_vector_db(pdf_id, question, top_k=8, api_key=user_api_key)
 
                 if not results:
                     answer = "❌ Is PDF me iska answer available nahi hai."
@@ -82,7 +86,7 @@ def chat(pdf_id):
                         answer = "❌ Is PDF me iska answer available nahi hai."
                     else:
                         context = "\n\n".join([r["text"] for r in filtered])
-                        answer = generate_answer(question, context)
+                        answer = generate_answer(question, context, api_key=user_api_key)
                         
         except Exception as e:
             logger.error(f"Chat RAG/Generation failed: {e}", exc_info=True)

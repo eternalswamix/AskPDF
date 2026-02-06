@@ -64,13 +64,17 @@ def upload_pdf():
 
         # ✅ Extract text directly from bytes (NO LOCAL TEMP FILE)
         try:
+            # ✅ Fetch User's API Key
+            user_data = supabase.table("users").select("gemini_api_key").eq("id", user_id).single().execute()
+            user_api_key = user_data.data.get("gemini_api_key") if user_data.data else None
+
             text = extract_text_from_pdf_bytes(file_bytes)
 
             # ✅ Adaptive chunking (your latest logic)
             chunks = chunk_text(text)
 
-            # ✅ Store chunks into Supabase pgvector table
-            add_to_vector_db(pdf_id, user_id, chunks)
+            # ✅ Store chunks into Supabase pgvector table (with user key)
+            add_to_vector_db(pdf_id, user_id, chunks, api_key=user_api_key)
             
         except Exception as e:
             logger.error(f"PDF Processing/Vector Store failed for {original_name}: {e}", exc_info=True)
