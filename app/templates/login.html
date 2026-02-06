@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% block title %}Login • AskPDF{% endblock %}
+
+{% block content %}
+
+<section class="min-h-[85vh] flex items-center justify-center py-12 px-6">
+  <div class="max-w-5xl w-full grid lg:grid-cols-2 gap-16 items-center">
+
+    <!-- LEFT: BRANDING/INFO -->
+    <div class="hidden lg:block reveal">
+      <div
+        class="inline-flex items-center gap-2 mb-6 px-3 py-1 flex items-center justify-center rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-bold uppercase tracking-widest w-fit">
+        <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+        Secure Access
+      </div>
+      <h1 class="text-4xl font-bold text-gray-100 leading-tight mb-6">
+        Unlock your <span class="text-primary">knowledge</span> base.
+      </h1>
+      <p class="text-lg text-gray-400 leading-relaxed mb-10 max-w-md">
+        Login to access your encrypted document cloud and continue your AI-powered research.
+      </p>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div class="bg-dark-800 p-6 rounded-xl border border-dark-700">
+          <div class="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center text-primary mb-4">
+            <span class="material-symbols-outlined">bolt</span>
+          </div>
+          <p class="font-bold text-gray-200 text-sm">Turbo Search</p>
+          <p class="text-xs text-gray-500 mt-1">Found in milliseconds</p>
+        </div>
+        <div class="bg-dark-800 p-6 rounded-xl border border-dark-700">
+          <div class="w-10 h-10 rounded-lg bg-green-900/30 flex items-center justify-center text-green-400 mb-4">
+            <span class="material-symbols-outlined">lock</span>
+          </div>
+          <p class="font-bold text-gray-200 text-sm">E2E Privacy</p>
+          <p class="text-xs text-gray-500 mt-1">Your data is yours</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: LOGIN CARD -->
+    <div class="flex justify-center reveal delay-100">
+      <div
+        class="w-full max-w-md bg-dark-800 rounded-2xl shadow-soft border border-dark-700 p-8 lg:p-10 relative overflow-hidden">
+
+        <div class="relative z-10">
+          <h2 class="text-2xl font-bold text-gray-100 mb-2">Welcome back</h2>
+          <p class="text-gray-500 text-sm mb-8">Please enter your details to sign in.</p>
+
+          {% if error %}
+          <div
+            class="mb-6 flex items-center gap-3 p-4 rounded-lg bg-red-900/20 border border-red-900/50 text-red-200 text-sm animate-shake">
+            <span class="material-symbols-outlined text-red-400">error</span>
+            {{ error }}
+          </div>
+          {% endif %}
+
+          <!-- GOOGLE AUTH -->
+          <a href="{{ url_for('auth.google_auth', next=request.args.get('next', '/upload')) }}"
+            class="w-full flex items-center justify-center gap-3 bg-dark-700/50 border border-dark-700 hover:border-primary/50 hover:bg-dark-700 rounded-xl py-3 transition-all group active:scale-95">
+            <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-5 h-5" alt="Google" />
+            <span class="font-medium text-gray-300 text-sm">Continue with Google</span>
+          </a>
+
+          <div class="flex items-center my-8">
+            <div class="flex-1 border-t border-dark-700"></div>
+            <span class="px-4 text-gray-500 text-[10px] font-bold tracking-widest uppercase">OR</span>
+            <div class="flex-1 border-t border-dark-700"></div>
+          </div>
+
+          <!-- FORM -->
+          <form method="POST" class="space-y-5">
+            <div>
+              <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 px-1">Username</label>
+              <div class="relative group">
+                <span
+                  class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-primary transition-colors">person</span>
+                <input name="username" type="text" placeholder="your_username" required
+                  class="w-full pl-11 pr-4 py-3 rounded-xl bg-dark-900 border border-dark-700 text-gray-200 placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all text-sm font-medium" />
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 px-1">Password</label>
+              <div class="relative group">
+                <span
+                  class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-primary transition-colors">lock</span>
+                <input name="password" type="password" placeholder="••••••••" required
+                  class="w-full pl-11 pr-4 py-3 rounded-xl bg-dark-900 border border-dark-700 text-gray-200 placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all text-sm font-medium" />
+              </div>
+            </div>
+
+            <div class="flex items-center justify-end">
+              <a href="{{ url_for('auth.forgot_password') }}"
+                class="text-xs font-medium text-primary hover:text-primary-hover transition-colors">Forgot Password?</a>
+            </div>
+
+            <button type="submit"
+              class="w-full bg-primary hover:bg-primary-hover text-white font-bold py-3.5 rounded-xl shadow-lg shadow-purple-900/20 transition-all active:scale-95 flex items-center justify-center gap-2">
+              Sign In
+              <span class="material-symbols-outlined text-sm">login</span>
+            </button>
+          </form>
+
+          <p class="mt-8 text-center text-sm text-gray-500 font-medium">
+            Don't have an account?
+            <a href="{{ url_for('auth.register', next=request.args.get('next', '/upload')) }}"
+              class="text-primary font-bold hover:underline">Create one</a>
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<style>
+  @keyframes shake {
+
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+
+    25% {
+      transform: translateX(-5px);
+    }
+
+    75% {
+      transform: translateX(5px);
+    }
+  }
+
+  .animate-shake {
+    animation: shake 0.4s ease-in-out;
+  }
+</style>
+
+{% endblock %}

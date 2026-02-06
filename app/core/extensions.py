@@ -1,6 +1,6 @@
 import os
 from supabase import create_client
-from app.config import Config
+from app.core.config import Config
 
 # ✅ Prefer service role for backend actions like Storage Upload
 SUPABASE_SERVICE_KEY = os.getenv("SUPABASE_SERVICE_KEY")

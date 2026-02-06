@@ -1,13 +1,13 @@
 from flask import Flask
-from app.config import Config
-from app.extensions import supabase
+from app.core.config import Config
+from app.core.extensions import supabase
 from app.routes.main_routes import main_bp
 from app.routes.auth_routes import auth_bp
 from app.routes.pdf_routes import pdf_bp
 from app.routes.chat_routes import chat_bp
 
 def create_app():
-    app = Flask(__name__, template_folder="../templates")
+    app = Flask(__name__, template_folder="templates")
 
     # Load config
     app.config.from_object(Config)

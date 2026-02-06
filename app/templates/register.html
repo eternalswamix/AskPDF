@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% block title %}Create Account • AskPDF{% endblock %}
+
+{% block content %}
+
+<section class="min-h-[90vh] flex items-center justify-center py-16 px-6">
+  <div class="max-w-5xl w-full grid lg:grid-cols-2 gap-16 items-center">
+
+    <!-- LEFT: BRANDING/BENEFITS -->
+    <div class="hidden lg:block reveal">
+      <div
+        class="inline-flex items-center gap-2 mb-6 px-3 py-1 flex items-center justify-center rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-bold uppercase tracking-widest w-fit">
+        <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+        Join the Future
+      </div>
+      <h1 class="text-4xl font-bold text-gray-100 leading-tight mb-6">
+        Elevate your <span class="text-primary">research</span> workflow.
+      </h1>
+      <p class="text-lg text-gray-400 leading-relaxed mb-10 max-w-md">
+        Create an account to start chatting with your PDFs. It takes less than 60 seconds.
+      </p>
+
+      <div class="space-y-6">
+        <div class="flex items-center gap-4 group">
+          <div
+            class="w-12 h-12 rounded-xl bg-dark-800 border border-dark-700 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all">
+            <span class="material-symbols-outlined text-2xl">auto_awesome</span>
+          </div>
+          <div>
+            <p class="font-bold text-gray-200">Advanced RAG Pipeline</p>
+            <p class="text-xs text-gray-500">Powered by Gemini & ChromaDB</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-4 group">
+          <div
+            class="w-12 h-12 rounded-xl bg-dark-800 border border-dark-700 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all">
+            <span class="material-symbols-outlined text-2xl">history</span>
+          </div>
+          <div>
+            <p class="font-bold text-gray-200">Session History</p>
+            <p class="text-xs text-gray-500">Pickup where you left off</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-4 group">
+          <div
+            class="w-12 h-12 rounded-xl bg-dark-800 border border-dark-700 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all">
+            <span class="material-symbols-outlined text-2xl">verified_user</span>
+          </div>
+          <div>
+            <p class="font-bold text-gray-200">Secure Vault</p>
+            <p class="text-xs text-gray-500">Enterprise-grade document security</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: REGISTER CARD -->
+    <div class="flex justify-center reveal delay-100">
+      <div
+        class="w-full max-w-md bg-dark-800 rounded-2xl shadow-soft border border-dark-700 p-8 lg:p-10 relative overflow-hidden">
+
+        <div class="relative z-10">
+          <h2 class="text-2xl font-bold text-gray-100 mb-2">Create Account</h2>
+          <p class="text-gray-500 text-sm mb-8">Start your 14-day pro trial today.</p>
+
+          {% if error %}
+          <div
+            class="mb-6 flex items-center gap-3 p-4 rounded-lg bg-red-900/20 border border-red-900/50 text-red-200 text-sm animate-shake">
+            <span class="material-symbols-outlined text-red-400">error</span>
+            {{ error }}
+          </div>
+          {% endif %}
+
+          <form method="POST" class="space-y-4">
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1.5 px-1">First
+                  Name</label>
+                <input name="first_name" type="text" placeholder="John" required
+                  class="w-full px-4 py-3 rounded-xl bg-dark-900 border border-dark-700 text-gray-200 focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all text-sm font-medium" />
+              </div>
+              <div>
+                <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1.5 px-1">Last
+                  Name</label>
+                <input name="last_name" type="text" placeholder="Doe" required
+                  class="w-full px-4 py-3 rounded-xl bg-dark-900 border border-dark-700 text-gray-200 focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all text-sm font-medium" />
+              </div>
+            </div>
+
+            <div>
+              <label
+                class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1.5 px-1">Username</label>
+              <input name="username" type="text" placeholder="johndoe123" required
+                class="w-full px-4 py-3 rounded-xl bg-dark-900 border border-dark-700 text-gray-200 focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all text-sm font-medium" />
+            </div>
+
+            <div>
+              <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1.5 px-1">Email
+                Address</label>
+              <input name="email" type="email" placeholder="john@company.com" required
+                class="w-full px-4 py-3 rounded-xl bg-dark-900 border border-dark-700 text-gray-200 focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all text-sm font-medium" />
+            </div>
+
+            <div>
+              <label class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1.5 px-1">Phone
+                Number</label>
+              <input name="phone_no" type="text" placeholder="+1 (555) 000-0000" required
+                class="w-full px-4 py-3 rounded-xl bg-dark-900 border border-dark-700 text-gray-200 focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all text-sm font-medium" />
+            </div>
+
+            <div>
+              <label
+                class="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1.5 px-1">Password</label>
+              <input name="password" type="password" placeholder="••••••••" required
+                class="w-full px-4 py-3 rounded-xl bg-dark-900 border border-dark-700 text-gray-200 focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all text-sm font-medium" />
+              <p class="text-[10px] text-gray-500 mt-2 px-1 font-medium italic">Min. 6 characters with at least one
+                number.</p>
+            </div>
+
+            <button type="submit"
+              class="w-full bg-primary hover:bg-primary-hover text-white font-bold py-3.5 mt-2 rounded-xl shadow-lg shadow-purple-900/20 transition-all active:scale-95 flex items-center justify-center gap-2">
+              Create My Account
+              <span class="material-symbols-outlined text-sm">how_to_reg</span>
+            </button>
+          </form>
+
+          <p class="mt-6 text-center text-sm text-gray-500 font-medium">
+            Already have an account?
+            <a href="{{ url_for('auth.login') }}" class="text-primary font-bold hover:underline">Sign in here</a>
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}

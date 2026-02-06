@@ -1,4 +1,4 @@
-from src.gemini_client import generate_text
+from app.services.chat.gemini_client import generate_text
 
 def generate_answer(question: str, context: str):
     prompt = f"""

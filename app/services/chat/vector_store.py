@@ -1,5 +1,5 @@
-from app.extensions import supabase
-from src.gemini_client import get_embedding
+from app.core.extensions import supabase
+from app.services.chat.gemini_client import get_embedding
 
 BATCH_SIZE = 60  # ✅ safe batch insert size
 

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>{% block title %}AskPDF • Intelligent Document Assistant{% endblock %}</title>
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+
+    <!-- Tailwind & Plugins -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Material Symbols -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        dark: {
+                            900: '#121212', // Main background
+                            800: '#1E1E1E', // Cards, Sections
+                            700: '#2D2D2D', // Inputs, Borders
+                        },
+                        gray: {
+                            100: '#E0E0E0', // Primary text
+                            300: '#B3B3B3', // Secondary text
+                            500: '#808080', // Tertiary/Placeholder
+                            700: '#333333',
+                            800: '#1F1F1F',
+                            900: '#121212',
+                        },
+                        primary: {
+                            DEFAULT: '#8A2BE2', // Base purple
+                            hover: '#9D50E5',
+                            muted: 'rgba(138, 43, 226, 0.15)',
+                        },
+                        accent: '#4B0082',
+                    },
+                    fontFamily: {
+                        "sans": ["Inter", "sans-serif"],
+                    },
+                    borderRadius: {
+                        'lg': '8px',
+                        'xl': '12px',
+                        '2xl': '16px',
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1)',
+                    }
+                },
+            },
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #121212;
+            color: #E0E0E0;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #121212;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #2D2D2D;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3D3D3D;
+        }
+
+        .glass-nav {
+            background: rgba(18, 18, 18, 0.9);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid #2D2D2D;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body class="min-h-screen font-sans selection:bg-primary selection:text-white flex flex-col">
+
+    <!-- NAVIGATION -->
+    <header id="mainNav" class="fixed top-0 w-full z-50 glass-nav transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+
+            <a href="{{ url_for('main.index') }}" class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center text-primary">
+                    <span class="material-symbols-outlined text-xl">description</span>
+                </div>
+                <span class="text-lg font-bold tracking-tight text-white">AskPDF</span>
+            </a>
+
+            <nav class="hidden md:flex items-center gap-8">
+                <a class="text-sm font-medium text-gray-300 hover:text-white transition-colors"
+                    href="{{ url_for('main.index') }}#features">Features</a>
+                <a class="text-sm font-medium text-gray-300 hover:text-white transition-colors"
+                    href="{{ url_for('main.index') }}#how">How it works</a>
+            </nav>
+
+            <div class="flex items-center gap-4">
+                {% if user %}
+                <a href="{{ url_for('auth.profile') }}"
+                    class="w-8 h-8 rounded-full bg-dark-800 border border-dark-700 flex items-center justify-center text-gray-300 hover:text-white hover:border-primary transition-all">
+                    <span class="material-symbols-outlined text-lg">person</span>
+                </a>
+                <a href="{{ url_for('pdf.upload_pdf') }}"
+                    class="hidden sm:flex bg-primary hover:bg-primary-hover text-white px-4 py-1.5 rounded-lg text-sm font-medium transition-all shadow-md items-center gap-2">
+                    <span class="material-symbols-outlined text-sm">upload</span>
+                    Upload
+                </a>
+                <a href="{{ url_for('main.logout') }}"
+                    class="w-8 h-8 rounded-lg border border-dark-700 flex items-center justify-center text-gray-400 hover:text-red-400 hover:border-red-900/50 hover:bg-red-900/20 transition-all shadow-sm"
+                    title="Logout">
+                    <span class="material-symbols-outlined text-lg">logout</span>
+                </a>
+                {% else %}
+                <a href="{{ url_for('auth.login') }}"
+                    class="text-gray-300 hover:text-white font-medium text-sm px-2">Login</a>
+                <a href="{{ url_for('auth.register') }}"
+                    class="bg-primary hover:bg-primary-hover text-white px-5 py-2 rounded-lg text-sm font-medium transition-all shadow-md active:scale-95">
+                    Get Started
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="pt-16 flex-grow">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-dark-900 border-t border-dark-700 pt-12 pb-8 px-6 mt-auto">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+
+            <div class="flex items-center gap-2">
+                <div class="w-6 h-6 rounded bg-dark-800 flex items-center justify-center text-gray-500">
+                    <span class="material-symbols-outlined text-sm">description</span>
+                </div>
+                <span class="text-sm font-semibold text-gray-500">AskPDF Intelligence</span>
+            </div>
+
+            <div class="flex gap-6 text-sm text-gray-500">
+                <a href="#" class="hover:text-gray-300 transition-colors">Privacy</a>
+                <a href="#" class="hover:text-gray-300 transition-colors">Terms</a>
+                <a href="#" class="hover:text-gray-300 transition-colors">Contact</a>
+            </div>
+
+            <p class="text-xs text-dark-700">© 2026 AskPDF. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Simple reveal animation on scroll
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('fade-in');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal').forEach((el) => {
+            el.style.opacity = '0'; // Initial state
+            observer.observe(el);
+        });
+    </script>
+</body>
+
+</html>

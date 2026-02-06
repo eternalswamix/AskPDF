@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+{% block title %}Account Settings • AskPDF{% endblock %}
+
+{% block content %}
+<section class="max-w-5xl mx-auto py-12 px-6">
+
+  <div class="flex items-start justify-between gap-4 mb-10 reveal">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-100 leading-tight">Your <span class="text-primary">Identity</span>.</h1>
+      <p class="text-gray-400 mt-2 font-medium">
+        Manage your personal information and application preferences.
+      </p>
+    </div>
+
+    <a href="{{ url_for('pdf.upload_pdf') }}"
+      class="inline-flex items-center gap-2 bg-dark-800 border border-dark-700 hover:border-gray-500 px-5 py-2.5 rounded-xl text-gray-300 font-medium transition shadow-soft">
+      <span class="material-symbols-outlined text-sm">upload_file</span>
+      Manage Docs
+    </a>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+    <!-- ACCOUNT INFO CARD -->
+    <div class="bg-dark-800 rounded-2xl shadow-soft border border-dark-700 p-8 reveal delay-100">
+      <div class="flex items-center gap-4 mb-8">
+        <div class="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center text-primary">
+          <span class="material-symbols-outlined text-2xl">fingerprint</span>
+        </div>
+        <div>
+          <h2 class="text-lg font-bold text-gray-100">Account Details</h2>
+          <p class="text-xs font-bold text-gray-500 uppercase tracking-widest">Metadata stored in Supabase</p>
+        </div>
+      </div>
+
+      <div class="space-y-4">
+        <div class="flex items-center justify-between p-4 rounded-xl border border-dark-700 bg-dark-900/30">
+          <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-gray-500">mail</span>
+            <span class="text-xs font-bold text-gray-500 uppercase tracking-widest px-1">Email</span>
+          </div>
+          <span class="text-sm font-medium text-gray-200">{{ user_db.email }}</span>
+        </div>
+
+        <div class="flex items-center justify-between p-4 rounded-xl border border-dark-700 bg-dark-900/30">
+          <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-gray-500">alternate_email</span>
+            <span class="text-xs font-bold text-gray-500 uppercase tracking-widest px-1">Username</span>
+          </div>
+          <span class="text-sm font-bold text-primary">@{{ user_db.username }}</span>
+        </div>
+
+        <div class="flex items-center justify-between p-4 rounded-xl border border-dark-700 bg-dark-900/30">
+          <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-gray-500">badge</span>
+            <span class="text-xs font-bold text-gray-500 uppercase tracking-widest px-1">Full Name</span>
+          </div>
+          <span class="text-sm font-medium text-gray-200">
+            {% if user_db.first_name %}{{ user_db.first_name }} {{ user_db.last_name or "" }}{% else %}Not specified{%
+            endif %}
+          </span>
+        </div>
+
+        <div class="flex items-center justify-between p-4 rounded-xl border border-dark-700 bg-dark-900/30">
+          <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-gray-500">call</span>
+            <span class="text-xs font-bold text-gray-500 uppercase tracking-widest px-1">Phone</span>
+          </div>
+          <span class="text-sm font-medium text-gray-200">{{ user_db.phone_no or "None" }}</span>
+        </div>
+      </div>
+
+      <div class="mt-8 p-4 rounded-xl bg-primary/10 border border-primary/20 flex items-center gap-4">
+        <div
+          class="w-8 h-8 rounded-full bg-dark-800 flex items-center justify-center text-primary shadow-sm border border-dark-700">
+          <span class="material-symbols-outlined text-sm">security_update_good</span>
+        </div>
+        <p class="text-[10px] font-bold text-gray-300 uppercase tracking-widest leading-relaxed">System Security: All
+          documents are private and isolated.</p>
+      </div>
+    </div>
+
+    <!-- UPDATE USERNAME CARD -->
+    <div class="bg-dark-800 rounded-2xl shadow-soft border border-dark-700 p-8 reveal delay-200">
+      <div class="flex items-center gap-4 mb-8">
+        <div class="w-12 h-12 rounded-xl bg-dark-700 flex items-center justify-center text-gray-100 shadow-lg">
+          <span class="material-symbols-outlined text-2xl">edit_note</span>
+        </div>
+        <div>
+          <h2 class="text-lg font-bold text-gray-100">Preference Update</h2>
+          <p class="text-xs font-bold text-gray-500 uppercase tracking-widest">Global identity settings</p>
+        </div>
+      </div>
+
+      {% if error %}
+      <div
+        class="mb-6 flex items-center gap-3 p-4 rounded-lg bg-red-900/20 border border-red-900/50 text-red-200 text-sm animate-shake">
+        <span class="material-symbols-outlined text-red-400">error</span>
+        {{ error }}
+      </div>
+      {% endif %}
+
+      {% if success %}
+      <div
+        class="mb-6 flex items-center gap-3 p-4 rounded-lg bg-green-900/20 border border-green-900/50 text-green-200 text-sm animate-bounce">
+        <span class="material-symbols-outlined text-green-500">check_circle</span>
+        {{ success }}
+      </div>
+      {% endif %}
+
+      <form method="POST" class="space-y-6">
+        <div>
+          <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 px-1">New Alias
+            (Username)</label>
+          <div class="relative group">
+            <span
+              class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-primary transition-colors">alternate_email</span>
+            <input name="username" type="text" required value="{{ user_db.username }}"
+              class="w-full pl-11 pr-4 py-3 rounded-xl bg-dark-900 border border-dark-700 text-gray-200 placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all font-medium"
+              placeholder="new_alias" />
+          </div>
+          <p class="text-[10px] text-gray-500 mt-2 px-1 font-bold italic tracking-wider uppercase">Must be unique and at
+            least 3 characters.</p>
+        </div>
+
+        <button type="submit"
+          class="w-full bg-dark-900 hover:bg-black text-white font-bold py-4 rounded-xl border border-dark-700 hover:border-gray-600 transition-all active:scale-95 flex items-center justify-center gap-2">
+          Apply Identity Change
+          <span class="material-symbols-outlined text-sm">save</span>
+        </button>
+      </form>
+
+      <div class="mt-8 text-center">
+        <p class="text-[10px] text-dark-600 font-bold uppercase tracking-[0.2em] opacity-50">End of identity module</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+{% endblock %}

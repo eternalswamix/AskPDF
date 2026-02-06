@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session
-from app.extensions import supabase
-from app.decorators import login_required
+from app.core.extensions import supabase
+from app.core.decorators import login_required
 from app.services.mailer import send_credentials_email
 
 auth_bp = Blueprint("auth", __name__)

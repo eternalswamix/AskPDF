@@ -2,12 +2,12 @@ import uuid
 from flask import Blueprint, render_template, request, redirect, url_for, session
 from werkzeug.utils import secure_filename
 
-from app.decorators import login_required
-from app.extensions import supabase
+from app.core.decorators import login_required
+from app.core.extensions import supabase
 
-from src.pdf_utils import extract_text_from_pdf_bytes
-from src.chunking import chunk_text
-from src.vector_store import add_to_vector_db
+from app.services.chat.pdf_utils import extract_text_from_pdf_bytes
+from app.services.chat.chunking import chunk_text
+from app.services.chat.vector_store import add_to_vector_db
 
 pdf_bp = Blueprint("pdf", __name__)
 
