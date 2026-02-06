@@ -34,6 +34,10 @@ def is_profile_complete(user_id: str) -> bool:
 def register():
     next_url = request.args.get("next", "/upload")
 
+    # ✅ Redirect if already logged in
+    if "user" in session:
+        return redirect(next_url)
+
     if request.method == "POST":
         username = request.form.get("username", "").strip().lower()
         first_name = request.form.get("first_name", "").strip()
@@ -85,6 +89,7 @@ def register():
                 return render_template("register.html", error="Account created but email sending failed. Please contact support.", user=session.get("user"))
 
             # ✅ Store in session (NOW includes username for navbar)
+            session.permanent = True
             session["user"] = {
                 "id": user_data.id,
                 "email": user_data.email,
@@ -113,6 +118,10 @@ def register():
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
     next_url = request.args.get("next", "/upload")
+
+    # ✅ Redirect if already logged in
+    if "user" in session:
+        return redirect(next_url)
 
     if request.method == "POST":
         username = request.form.get("username", "").strip().lower()
@@ -148,6 +157,7 @@ def login():
                 session["refresh_token"] = auth.session.refresh_token
 
             # ✅ Store session (include username)
+            session.permanent = True  # Keep user logged in across browser restarts
             session["user"] = {
                 "id": user_data.id,
                 "email": user_data.email,
@@ -236,6 +246,7 @@ def google_callback():
         db_user = supabase.table("users").select("username").eq("id", user_id).single().execute()
         username = db_user.data.get("username") if db_user.data else None
 
+        session.permanent = True
         session["user"] = {
             "id": user_id,
             "email": email,
