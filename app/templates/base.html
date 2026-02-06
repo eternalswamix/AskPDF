@@ -114,45 +114,39 @@
 <body class="min-h-screen font-sans selection:bg-primary selection:text-white flex flex-col">
 
     <!-- NAVIGATION -->
-    <header id="mainNav" class="fixed top-0 w-full z-50 glass-nav transition-all duration-300">
+    <header id="mainNav"
+        class="fixed top-0 w-full z-50 bg-dark-900/95 border-b border-dark-700 transition-all duration-300">
         <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
 
-            <a href="{{ url_for('main.index') }}" class="flex items-center gap-2.5">
-                <div class="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center text-primary">
+            <a href="{{ url_for('main.index') }}" class="flex items-center gap-2.5 group">
+                <div
+                    class="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
                     <span class="material-symbols-outlined text-xl">description</span>
                 </div>
                 <span class="text-lg font-bold tracking-tight text-white">AskPDF</span>
             </a>
 
-            <nav class="hidden md:flex items-center gap-8">
-                <a class="text-sm font-medium text-gray-300 hover:text-white transition-colors"
-                    href="{{ url_for('main.index') }}#features">Features</a>
-                <a class="text-sm font-medium text-gray-300 hover:text-white transition-colors"
-                    href="{{ url_for('main.index') }}#how">How it works</a>
-            </nav>
-
             <div class="flex items-center gap-4">
                 {% if user %}
                 <a href="{{ url_for('auth.profile') }}"
-                    class="w-8 h-8 rounded-full bg-dark-800 border border-dark-700 flex items-center justify-center text-gray-300 hover:text-white hover:border-primary transition-all">
-                    <span class="material-symbols-outlined text-lg">person</span>
+                    class="text-sm font-medium text-gray-300 hover:text-white transition-colors mr-2">
+                    {{ user.username }}
                 </a>
                 <a href="{{ url_for('pdf.upload_pdf') }}"
-                    class="hidden sm:flex bg-primary hover:bg-primary-hover text-white px-4 py-1.5 rounded-lg text-sm font-medium transition-all shadow-md items-center gap-2">
+                    class="bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-md flex items-center gap-2">
                     <span class="material-symbols-outlined text-sm">upload</span>
                     Upload
                 </a>
-                <a href="{{ url_for('main.logout') }}"
-                    class="w-8 h-8 rounded-lg border border-dark-700 flex items-center justify-center text-gray-400 hover:text-red-400 hover:border-red-900/50 hover:bg-red-900/20 transition-all shadow-sm"
+                <a href="{{ url_for('main.logout') }}" class="text-gray-400 hover:text-red-400 transition-colors p-2"
                     title="Logout">
-                    <span class="material-symbols-outlined text-lg">logout</span>
+                    <span class="material-symbols-outlined text-xl">logout</span>
                 </a>
                 {% else %}
                 <a href="{{ url_for('auth.login') }}"
                     class="text-gray-300 hover:text-white font-medium text-sm px-2">Login</a>
                 <a href="{{ url_for('auth.register') }}"
-                    class="bg-primary hover:bg-primary-hover text-white px-5 py-2 rounded-lg text-sm font-medium transition-all shadow-md active:scale-95">
-                    Get Started
+                    class="bg-dark-800 hover:bg-dark-700 border border-dark-700 text-white px-5 py-2 rounded-lg text-sm font-medium transition-all">
+                    Register
                 </a>
                 {% endif %}
             </div>
@@ -165,23 +159,13 @@
     </main>
 
     <!-- FOOTER -->
-    <footer class="bg-dark-900 border-t border-dark-700 pt-12 pb-8 px-6 mt-auto">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-
-            <div class="flex items-center gap-2">
-                <div class="w-6 h-6 rounded bg-dark-800 flex items-center justify-center text-gray-500">
-                    <span class="material-symbols-outlined text-sm">description</span>
-                </div>
-                <span class="text-sm font-semibold text-gray-500">AskPDF Intelligence</span>
-            </div>
-
-            <div class="flex gap-6 text-sm text-gray-500">
-                <a href="#" class="hover:text-gray-300 transition-colors">Privacy</a>
-                <a href="#" class="hover:text-gray-300 transition-colors">Terms</a>
-                <a href="#" class="hover:text-gray-300 transition-colors">Contact</a>
-            </div>
-
+    <footer class="bg-dark-900 border-t border-dark-700 py-8 px-6 mt-auto">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
             <p class="text-xs text-dark-700">© 2026 AskPDF. All rights reserved.</p>
+            <div class="flex gap-6 text-xs text-dark-700">
+                <a href="#" class="hover:text-gray-500 transition-colors">Privacy</a>
+                <a href="#" class="hover:text-gray-500 transition-colors">Terms</a>
+            </div>
         </div>
     </footer>
 

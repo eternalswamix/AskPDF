@@ -4,6 +4,7 @@ from app.core.extensions import supabase
 
 from app.services.chat.vector_store import search_in_vector_db
 from app.services.chat.rag_pipeline import generate_answer
+from app.services.chat.gemini_client import GeminiAPIError
 import logging
 
 chat_bp = Blueprint("chat", __name__)
