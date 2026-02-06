@@ -1,125 +1,115 @@
-# 📄 PDF-CHAT-ASSISTENT — AI Chat With Your PDFs
+# AskPDF • Intelligent Document Assistant
 
-PDF-CHAT-ASSISTENT is an AI-powered web application that allows users to upload PDFs and chat with them using natural language.  
-The assistant answers **strictly based on the uploaded PDF content** and rejects any out-of-context questions.
+![AskPDF Banner](https://img.shields.io/badge/Status-Active-success?style=for-the-badge)
+![Python](https://img.shields.io/badge/Python-3.10%2B-blue?style=for-the-badge&logo=python)
+![Flask](https://img.shields.io/badge/Flask-3.0-green?style=for-the-badge&logo=flask)
+![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.4-38B2AC?style=for-the-badge&logo=tailwind-css)
 
-Built using **Flask, Google Gemini, Supabase (Auth + Storage + pgvector)** with a premium dark glass UI.
+**AskPDF** is a powerful, AI-driven web application that allows users to upload PDF documents and interact with them using natural language. Built with a modern, dark-themed UI and powered by Google's Gemini AI, it transforms static documents into dynamic knowledge bases.
 
 ---
 
 ## 🚀 Features
 
-- 📄 Upload PDF and start chatting instantly
-- 🧠 AI-powered answers using Google Gemini
-- 🔍 Semantic search using Supabase pgvector
-- 🚫 No hallucinations — PDF-only answers
-- 🗄️ Persistent chat history
-- 🔐 Authentication
-  - Email & Password
-  - Google OAuth
-  - Profile completion flow
-- 🌙 Premium dark glass UI (Tailwind CSS)
-- 🧾 Smart commands like `summary`, `summarize`
-- ☁️ Deployable on Vercel (Free Tier)
-
----
-
-## 🧠 How the Project Works (High-Level Flow)
-
-1. User logs in using Email/Password or Google  
-2. User uploads a PDF  
-3. PDF is stored in Supabase Storage  
-4. Text is extracted from the PDF  
-5. Text is split into adaptive chunks  
-6. Each chunk is embedded using Gemini Embeddings  
-7. Embeddings are stored in Supabase pgvector  
-8. User asks a question → semantic search → Gemini answer  
-9. Chat history is saved and shown in sidebar  
+-   **📄 PDF Analysis**: Drag-and-drop upload with instant text extraction and vectorization.
+-   **🤖 AI Chat**: Ask questions, request summaries, and get citations using Google Gemini 1.5.
+-   **🔐 Secure Vault**: Enterprise-grade document storage powered by Supabase.
+-   **🎨 Modern Dark UI**: A sleek, responsive interface built with TailwindCSS and Glassmorphism.
+-   **🔑 Google Auth**: Seamless sign-in and account management.
+-   **⚡ Real-time Stream**: Fast, streaming AI responses.
 
 ---
 
 ## 🛠️ Tech Stack
 
-**Backend:** Flask (Python)  
-**AI:** Google Gemini (LLM + Embeddings)  
-**Database:** Supabase PostgreSQL + pgvector  
-**Storage:** Supabase Storage  
-**Frontend:** Jinja + Tailwind CSS  
-**Deployment:** Vercel (Free Tier)
+-   **Backend**: Flask (Python), Supabase (PostgreSQL + pgvector).
+-   **Frontend**: HTML5, TailwindCSS, Vanilla JS (No heavy framework overhead).
+-   **AI Engine**: Google Gemini API (Embeddings & Generation).
+-   **Authentication**: OAuth 2.0 (Google) via Authlib.
+-   **Deployment**: Vercel Ready.
 
 ---
 
-## 🗄️ Supabase SQL Schema
+## ⚡ Quick Start
 
-```sql
-create extension if not exists vector;
+### Prerequisites
+-   Python 3.10+
+-   Supabase Account
+-   Google Cloud Project (for OAuth & Gemini API)
 
-create table users (
-  id uuid primary key,
-  email text unique,
-  username text unique,
-  first_name text,
-  last_name text,
-  phone_no text,
-  created_at timestamp default now()
-);
+### Installation
 
-create table pdf_files (
-  id uuid primary key default gen_random_uuid(),
-  user_id uuid references users(id),
-  filename text,
-  original_filename text,
-  storage_path text,
-  created_at timestamp default now()
-);
+1.  **Clone the Repository**
+    ```bash
+    git clone https://github.com/eternalswamix/AskPDF.git
+    cd AskPDF
+    ```
 
-create table pdf_chunks (
-  id bigserial primary key,
-  pdf_id uuid,
-  user_id uuid,
-  content text,
-  embedding vector(768)
-);
+2.  **Install Dependencies**
+    ```bash
+    pip install -r requirements.txt
+    ```
 
-create table chat_history (
-  id bigserial primary key,
-  pdf_id uuid,
-  user_id uuid,
-  question text,
-  answer text,
-  created_at timestamp default now()
-);
+3.  **Configure Environment**
+    Create a `.env` file in the root directory:
+    ```ini
+    # App Secret
+    FLASK_SECRET=your_super_secret_key
+
+    # Supabase (Database & Auth)
+    SUPABASE_URL=your_supabase_url
+    SUPABASE_KEY=your_supabase_anon_key
+    SUPABASE_SERVICE_KEY=your_service_role_key
+
+    # Google Gemini AI
+    GEMINI_API_KEY=your_gemini_api_key
+
+    # Google OAuth
+    GOOGLE_CLIENT_ID=your_google_client_id
+    GOOGLE_CLIENT_SECRET=your_google_client_secret
+    
+    # App URL (for redirects)
+    BASE_URL=http://localhost:5000 
+    ```
+
+4.  **Run the Application**
+    ```bash
+    python run.py
+    ```
+    Access the app at `http://127.0.0.1:5000`.
+
+---
+
+## 📂 Project Structure
+
+```
+AskPDF/
+├── api/                # Vercel Serverless Entry
+├── app/
+│   ├── core/           # Config, Errors, Logging
+│   ├── routes/         # Blueprints (Auth, Chat, PDF)
+│   ├── services/       # Business Logic (Gemini, Vector Store)
+│   ├── static/         # CSS, Images, JS
+│   └── templates/      # Jinja2 HTML Templates
+├── requirements.txt    # Dependencies
+├── run.py              # Local Development Entry
+├── schema.sql          # Database Schema
+└── vercel.json         # Deployment Config
 ```
 
 ---
 
-## ⚙️ Environment Variables
+## 🤝 Connect with Me
 
-```env
-FLASK_SECRET=supersecretkey
-GEMINI_API_KEY=AIzaSyXXXXXXXX
-SUPABASE_URL=https://xxxx.supabase.co
-SUPABASE_SERVICE_KEY=eyJhbGciOi...
-SUPABASE_KEY=sb_publishable...
+Developed by **Madhav Swami (EternalSwamiX)**.
 
-MAIL_HOST=smtp.gmail.com
-MAIL_PORT=587
-MAIL_USERNAME=your@gmail.com
-MAIL_PASSWORD=abcdabcdabcdabcd
-MAIL_FROM=your@gmail.com
-```
-
----
-
-## ▶️ Run Locally
-
-```bash
-pip install -r requirements.txt
-python run.py
-```
+-   [![GitHub](https://img.shields.io/badge/GitHub-eternalswamix-181717?style=flat&logo=github)](https://github.com/eternalswamix)
+-   [![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0A66C2?style=flat&logo=linkedin)](https://linkedin.com/in/madhavswami)
+-   [![Twitter](https://img.shields.io/badge/Twitter-Follow-1DA1F2?style=flat&logo=twitter)](https://twitter.com/eternalswamix)
+-   [![Website](https://img.shields.io/badge/Website-Portfolio-FF5722?style=flat&logo=firefox)](https://eternalswamix.github.io)
 
 ---
 
 ## 📄 License
 
-MIT License
+This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.

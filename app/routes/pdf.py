@@ -29,6 +29,20 @@ def upload_pdf():
         unique_name = f"{uuid.uuid4()}_{original_name}"
         user_id = session["user"]["id"]
 
+        # ✅ Check & Update API Key from Form
+        gemini_api_key = request.form.get("gemini_api_key")
+        if gemini_api_key:
+            # Update user's key in DB
+            try:
+                supabase.table("users").update({"gemini_api_key": gemini_api_key}).eq("id", user_id).execute()
+                # Update session
+                session["user"]["gemini_api_key"] = gemini_api_key
+                session.modified = True
+            except Exception as e:
+                logger.error(f"Failed to update API Key: {e}")
+        elif not session["user"].get("gemini_api_key"):
+             return render_template("upload.html", user=session.get("user"), error="Gemini API Key is required.")
+
         # ✅ Read bytes ONCE (works in Vercel)
         file_bytes = pdf_file.read()
 
