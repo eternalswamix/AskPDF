@@ -16,7 +16,7 @@ def get_embedding(text: str):
         safe_text = safe_text[:MAX_EMBED_CHARS]
 
     res = client.models.embed_content(
-        model="text-embedding-004",
+        model="models/text-embedding-004", # ✅ Explicit model path
         contents=safe_text
     )
     return res.embeddings[0].values

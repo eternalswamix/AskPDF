@@ -1,5 +1,6 @@
 import os
 from supabase import create_client
+from authlib.integrations.flask_client import OAuth
 from app.core.config import Config
 
 # ✅ Prefer service role for backend actions like Storage Upload
@@ -16,3 +17,5 @@ supabase = create_client(
     Config.SUPABASE_URL,
     SUPABASE_SERVICE_KEY or SUPABASE_ANON_KEY
 )
+
+oauth = OAuth()

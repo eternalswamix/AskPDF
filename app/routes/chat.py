@@ -4,8 +4,10 @@ from app.core.extensions import supabase
 
 from app.services.chat.vector_store import search_in_vector_db
 from app.services.chat.rag_pipeline import generate_answer
+import logging
 
 chat_bp = Blueprint("chat", __name__)
+logger = logging.getLogger(__name__)
 
 @chat_bp.route("/chat/<pdf_id>", methods=["GET", "POST"])
 @login_required
@@ -49,37 +51,42 @@ def chat(pdf_id):
 
         q_lower = question.lower()
 
-        # ✅ Summary
-        if "summary" in q_lower or "summarize" in q_lower:
-            context_results = search_in_vector_db(pdf_id, "overall document summary", top_k=10)
+        try:
+            # ✅ Summary
+            if "summary" in q_lower or "summarize" in q_lower:
+                context_results = search_in_vector_db(pdf_id, "overall document summary", top_k=10)
 
-            if not context_results:
-                answer = "❌ Summary generate nahi ho paya, because PDF indexing incomplete hai. Please re-upload PDF."
-            else:
-                context = "\n\n".join([r["text"] for r in context_results])
-
-                if "short" in q_lower:
-                    summary_prompt = "Give a short summary of this PDF in 6-8 bullet points."
+                if not context_results:
+                    answer = "❌ Summary generate nahi ho paya, because PDF indexing incomplete hai. Please re-upload PDF."
                 else:
-                    summary_prompt = "Give a clean structured summary of this PDF in bullet points."
+                    context = "\n\n".join([r["text"] for r in context_results])
 
-                answer = generate_answer(summary_prompt, context)
+                    if "short" in q_lower:
+                        summary_prompt = "Give a short summary of this PDF in 6-8 bullet points."
+                    else:
+                        summary_prompt = "Give a clean structured summary of this PDF in bullet points."
 
-        else:
-            # ✅ Normal question
-            results = search_in_vector_db(pdf_id, question, top_k=8)
+                    answer = generate_answer(summary_prompt, context)
 
-            if not results:
-                answer = "❌ Is PDF me iska answer available nahi hai."
             else:
-                # ✅ similarity threshold (tuneable)
-                filtered = [r for r in results if r["similarity"] > 0.20]
+                # ✅ Normal question
+                results = search_in_vector_db(pdf_id, question, top_k=8)
 
-                if not filtered:
+                if not results:
                     answer = "❌ Is PDF me iska answer available nahi hai."
                 else:
-                    context = "\n\n".join([r["text"] for r in filtered])
-                    answer = generate_answer(question, context)
+                    # ✅ similarity threshold (tuneable)
+                    filtered = [r for r in results if r["similarity"] > 0.20]
+
+                    if not filtered:
+                        answer = "❌ Is PDF me iska answer available nahi hai."
+                    else:
+                        context = "\n\n".join([r["text"] for r in filtered])
+                        answer = generate_answer(question, context)
+                        
+        except Exception as e:
+            logger.error(f"Chat RAG/Generation failed: {e}", exc_info=True)
+            answer = "❌ Sorry, I encountered an error while processing your request. Please try again."
 
         # ✅ Save chat history
         supabase.table("chat_history").insert({

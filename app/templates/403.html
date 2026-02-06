@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Access Denied • AskPDF{% endblock %}
+
+{% block content %}
+<section class="min-h-[80vh] flex items-center justify-center py-16 px-6 text-center">
+    <div class="max-w-2xl reveal">
+        <div
+            class="inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-dark-800 border border-dark-700 mb-8 shadow-soft">
+            <span class="material-symbols-outlined text-6xl text-gray-500">lock_person</span>
+        </div>
+
+        <h1 class="text-8xl font-black text-dark-800 mb-2 select-none tracking-tighter">403</h1>
+        <h2 class="text-3xl font-bold text-gray-100 mb-4">Access Denied</h2>
+
+        <p class="text-gray-400 text-lg mb-10 max-w-md mx-auto leading-relaxed">
+            You don't have permission to access this resource. Please check if you're logged into the correct account.
+        </p>
+
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <a href="{{ url_for('auth.login') }}"
+                class="px-8 py-3.5 bg-primary hover:bg-primary-hover text-white font-bold rounded-xl shadow-lg shadow-purple-900/20 transition-all active:scale-95 flex items-center gap-2">
+                <span class="material-symbols-outlined">login</span>
+                Login
+            </a>
+            <a href="{{ url_for('main.index') }}"
+                class="px-8 py-3.5 bg-dark-800 border border-dark-700 hover:border-gray-600 text-gray-300 hover:text-white font-bold rounded-xl transition-all active:scale-95 flex items-center gap-2">
+                Home
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

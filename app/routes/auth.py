@@ -1,9 +1,11 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session
-from app.core.extensions import supabase
+from app.core.extensions import supabase, oauth
 from app.core.decorators import login_required
 from app.services.mailer import send_credentials_email
+import logging
 
 auth_bp = Blueprint("auth", __name__)
+logger = logging.getLogger(__name__)
 
 
 # ✅ Helper: check profile complete
@@ -78,7 +80,7 @@ def register():
             try:
                 send_credentials_email(user_data.email, username, password)
             except Exception as mail_err:
-                print("❌ Email sending failed:", str(mail_err))
+                logger.error(f"❌ Email sending failed for {email}: {mail_err}", exc_info=True)
                 # (optional) show on UI
                 return render_template("register.html", error="Account created but email sending failed. Please contact support.", user=session.get("user"))
 
@@ -167,52 +169,91 @@ def login():
 
 
 # -----------------------------
-# Google Auth
+# Google Auth (Direct with Authlib)
 # -----------------------------
+from app.core.config import Config
+
 @auth_bp.route("/auth/google")
 def google_auth():
     next_url = request.args.get("next", "/upload")
-    redirect_to = url_for("auth.google_callback", _external=True, next=next_url)
-
-    res = supabase.auth.sign_in_with_oauth({
-        "provider": "google",
-        "options": {"redirect_to": redirect_to}
-    })
-    return redirect(res.url)
+    
+    if Config.BASE_URL:
+        # Strip trailing slash if present to avoid double slashes
+        base = Config.BASE_URL.rstrip("/")
+        redirect_uri = f"{base}/auth/callback"
+    else:
+        redirect_uri = url_for("auth.google_callback", _external=True)
+    
+    print(f"DEBUG: Config.BASE_URL = {Config.BASE_URL}")
+    print(f"DEBUG: Generated redirect_uri = {redirect_uri}")
+        
+    session["next_url"] = next_url
+    return oauth.google.authorize_redirect(redirect_uri)
 
 
 @auth_bp.route("/auth/callback")
 def google_callback():
-    code = request.args.get("code")
-    next_url = request.args.get("next", "/upload")
+    try:
+        logger.info("Entering google_callback")
+        token = oauth.google.authorize_access_token()
+        logger.debug(f"Token keys received: {token.keys() if token else 'None'}")
+        
+        user_info = token.get("userinfo")
+        
+        if not user_info:
+            # Try fetching userinfo manually if not in token
+            user_info = oauth.google.userinfo()
 
-    if not code:
-        return redirect(url_for("auth.login"))
+        email = user_info["email"]
+        google_id = user_info["sub"] # Google unique ID
+        
+        # NOTE: We are using email as the unique identifier to link with Supabase users.
+        # Ideally, we should use Supabase Admin API to create a user if they don't exist,
+        # but for this flow, we will manage the user in the 'users' table directly.
+        # Since we can't easily generate a valid Supabase Auth session without their proprietary flow,
+        # we will simulate a session for our app's logic.
+        
+        # 1. Check if user exists in our 'users' table (by email) using Supabase Client
+        existing_user_res = supabase.table("users").select("id").eq("email", email).single().execute()
+        
+        if existing_user_res.data:
+            # User exists! Use their existing ID
+            user_id = existing_user_res.data["id"]
+        else:
+            # New user: Create a deterministic ID based on Google ID
+            import uuid
+            uiid_namespace = uuid.UUID('6ba7b810-9dad-11d1-80b4-00c04fd430c8') # UUID.NAMESPACE_DNS
+            user_id = str(uuid.uuid5(uiid_namespace, google_id))
+            
+            # Insert new user
+            supabase.table("users").insert({
+                "id": user_id,
+                "email": email,
+                # We don't have username yet if it's new
+            }).execute()
 
-    auth = supabase.auth.exchange_code_for_session({"auth_code": code})
-    user_data = auth.user
+        # Check existing username
+        db_user = supabase.table("users").select("username").eq("id", user_id).single().execute()
+        username = db_user.data.get("username") if db_user.data else None
 
-    # ✅ Upsert base user row
-    supabase.table("users").upsert({
-        "id": user_data.id,
-        "email": user_data.email
-    }).execute()
+        session["user"] = {
+            "id": user_id,
+            "email": email,
+            "username": username
+        }
 
-    # ✅ Get username from DB
-    db_user = supabase.table("users").select("username").eq("id", user_data.id).single().execute()
-    username = db_user.data.get("username") if db_user.data else None
+        # Retrieve next_url
+        next_url = session.pop("next_url", "/upload")
 
-    session["user"] = {
-        "id": user_data.id,
-        "email": user_data.email,
-        "username": username
-    }
+        # Redirect to update profile if username is missing
+        if not is_profile_complete(user_id):
+            return redirect(url_for("auth.complete_profile"))
 
-    # ✅ Redirect to complete profile if missing fields
-    if not is_profile_complete(user_data.id):
-        return redirect(url_for("auth.complete_profile"))
+        return redirect(next_url)
 
-    return redirect(next_url)
+    except Exception as e:
+        logger.error(f"Google Auth Error: {e}", exc_info=True)
+        return redirect(url_for("auth.login", error=f"Google login failed: {str(e)}"))
 
 
 # -----------------------------

@@ -8,8 +8,10 @@ from app.core.extensions import supabase
 from app.services.chat.pdf_utils import extract_text_from_pdf_bytes
 from app.services.chat.chunking import chunk_text
 from app.services.chat.vector_store import add_to_vector_db
+import logging
 
 pdf_bp = Blueprint("pdf", __name__)
+logger = logging.getLogger(__name__)
 
 @pdf_bp.route("/upload", methods=["GET", "POST"])
 @login_required
@@ -40,6 +42,7 @@ def upload_pdf():
                 file_options={"content-type": "application/pdf"}
             )
         except Exception as e:
+            logger.error(f"Supabase Storage upload failed for {unique_name}: {e}", exc_info=True)
             return render_template(
                 "upload.html",
                 user=session.get("user"),
@@ -60,13 +63,19 @@ def upload_pdf():
         pdf_id = pdf_row.data[0]["id"]
 
         # ✅ Extract text directly from bytes (NO LOCAL TEMP FILE)
-        text = extract_text_from_pdf_bytes(file_bytes)
+        try:
+            text = extract_text_from_pdf_bytes(file_bytes)
 
-        # ✅ Adaptive chunking (your latest logic)
-        chunks = chunk_text(text)
+            # ✅ Adaptive chunking (your latest logic)
+            chunks = chunk_text(text)
 
-        # ✅ Store chunks into Supabase pgvector table
-        add_to_vector_db(pdf_id, user_id, chunks)
+            # ✅ Store chunks into Supabase pgvector table
+            add_to_vector_db(pdf_id, user_id, chunks)
+            
+        except Exception as e:
+            logger.error(f"PDF Processing/Vector Store failed for {original_name}: {e}", exc_info=True)
+            # Optional: Delete the file from DB/Storage to clean up?
+            return render_template("upload.html", user=session.get("user"), error=f"Processing failed: {str(e)}")
 
         return redirect(url_for("chat.chat", pdf_id=pdf_id))
 
