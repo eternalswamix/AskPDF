@@ -7,7 +7,14 @@ load_dotenv()
 # ✅ Safe limit: prevents embedding API errors on huge text
 MAX_EMBED_CHARS = 10000
 
-from google.api_core import exceptions
+try:
+    from google.api_core import exceptions
+    GoogleAPIExceptions = (exceptions.ResourceExhausted, exceptions.InvalidArgument, exceptions.Unauthenticated)
+except ImportError:
+    # ✅ Fallback if google-api-core is missing (prevents Vercel crash)
+    exceptions = None
+    GoogleAPIExceptions = ()  # Empty tuple to use in except block
+
 
 # ✅ Custom Exception for cleaner frontend handling
 class GeminiAPIError(Exception):
@@ -37,12 +44,17 @@ def get_embedding(text: str, api_key=None):
         )
         return res.embeddings[0].values
     
-    except exceptions.ResourceExhausted:
-        raise GeminiAPIError("⚠️ Daily Quota Exceeded. Please use a different API Key or try again tomorrow.")
-    except exceptions.InvalidArgument:
-        raise GeminiAPIError("❌ Invalid API Key. Please update it in your Profile.")
-    except exceptions.Unauthenticated:
-        raise GeminiAPIError("❌ API Key authentication failed. Key might be expired.")
+    except GoogleAPIExceptions as e:
+         # Map known Google exceptions to readable errors
+        if exceptions and isinstance(e, exceptions.ResourceExhausted):
+            raise GeminiAPIError("⚠️ Daily Quota Exceeded. Please use a different API Key or try again tomorrow.")
+        if exceptions and isinstance(e, exceptions.InvalidArgument):
+            raise GeminiAPIError("❌ Invalid API Key. Please update it in your Profile.")
+        if exceptions and isinstance(e, exceptions.Unauthenticated):
+            raise GeminiAPIError("❌ API Key authentication failed. Key might be expired.")
+        # Fallback
+        raise GeminiAPIError(f"Gemini API Error: {str(e)}", original_error=e)
+
     except Exception as e:
         raise GeminiAPIError(f"Embedding Error: {str(e)}", original_error=e)
 
@@ -56,11 +68,15 @@ def generate_text(prompt: str, api_key=None):
         )
         return res.text
         
-    except exceptions.ResourceExhausted:
-        raise GeminiAPIError("⚠️ Daily Quota Exceeded. Please use a different API Key or try again tomorrow.")
-    except exceptions.InvalidArgument:
-        raise GeminiAPIError("❌ Invalid API Key. Please update it in your Profile.")
-    except exceptions.Unauthenticated:
-        raise GeminiAPIError("❌ API Authentication failed. Please check your key.")
+    except GoogleAPIExceptions as e:
+         # Map known Google exceptions to readable errors
+        if exceptions and isinstance(e, exceptions.ResourceExhausted):
+            raise GeminiAPIError("⚠️ Daily Quota Exceeded. Please use a different API Key or try again tomorrow.")
+        if exceptions and isinstance(e, exceptions.InvalidArgument):
+            raise GeminiAPIError("❌ Invalid API Key. Please update it in your Profile.")
+        if exceptions and isinstance(e, exceptions.Unauthenticated):
+            raise GeminiAPIError("❌ API Authentication failed. Please check your key.")
+        raise GeminiAPIError(f"Gemini API Error: {str(e)}", original_error=e)
+
     except Exception as e:
         raise GeminiAPIError(f"Generation Error: {str(e)}", original_error=e)
