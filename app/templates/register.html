@@ -71,6 +71,19 @@
           </div>
           {% endif %}
 
+          <!-- GOOGLE AUTH -->
+          <a href="{{ url_for('auth.google_auth', next=request.args.get('next', '/upload')) }}"
+            class="w-full flex items-center justify-center gap-3 bg-dark-700/50 border border-dark-700 hover:border-primary/50 hover:bg-dark-700 rounded-xl py-3 transition-all group active:scale-95">
+            <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-5 h-5" alt="Google" />
+            <span class="font-medium text-gray-300 text-sm">Continue with Google</span>
+          </a>
+
+          <div class="flex items-center my-8">
+            <div class="flex-1 border-t border-dark-700"></div>
+            <span class="px-4 text-gray-500 text-[10px] font-bold tracking-widest uppercase">OR</span>
+            <div class="flex-1 border-t border-dark-700"></div>
+          </div>
+
           <form method="POST" class="space-y-4">
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
